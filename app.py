@@ -2,9 +2,9 @@ import streamlit as st
 from urllib.parse import quote
 import time
 
-# [v3.1] 신찾기: 업로드 창 한글화 및 문법 오류 수정 버전
+# [v3.2] 신찾기: CSS 최적화를 통한 업로드 창 완전 한글화 버전
 # 2026-02-16 업데이트
-# 지침 준수: 전체 코드 제공 및 오류 원인 설명
+# 지침 준수: 전체 코드 제공 및 UI 개선 사항 상세 설명
 
 def generate_partners_link(query, min_p, max_p):
     """
@@ -29,32 +29,49 @@ def generate_partners_link(query, min_p, max_p):
 # --- UI 레이아웃 ---
 st.set_page_config(page_title="신찾기", page_icon="💰")
 
-# 업로드 창 내부 텍스트를 한글로 강제 변경하는 CSS (v3.1 핵심 기능)
+# [v3.2 수정] 영문을 완벽히 숨기고 한글만 보이게 하는 정밀 CSS
 st.markdown("""
     <style>
-    [data-testid="stFileUploadDropzone"] section div::before {
-        content: "파일을 여기에 끌어다 놓으세요";
-        font-size: 16px;
+    /* 1. 업로드 영역 전체 문구 숨기기 및 교체 */
+    [data-testid="stFileUploadDropzone"] section div small {
+        display: none;
     }
     [data-testid="stFileUploadDropzone"] section div span {
         display: none;
     }
-    [data-testid="stBaseButton-secondary"] p {
-        display: none;
+    [data-testid="stFileUploadDropzone"] section div::before {
+        content: "사진 파일을 이 곳에 끌어다 놓으세요";
+        font-size: 16px;
+        font-weight: bold;
+        color: #31333F;
+    }
+    
+    /* 2. 'Browse files' 버튼 텍스트 숨기기 및 교체 */
+    [data-testid="stBaseButton-secondary"] {
+        color: transparent !important;
+        position: relative;
     }
     [data-testid="stBaseButton-secondary"]::after {
         content: "파일 찾아보기";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        color: #31333F;
         font-size: 14px;
+        visibility: visible;
+        white-space: nowrap;
     }
     </style>
     """, unsafe_allow_html=True)
 
+# 메인 타이틀
 st.title("💰 신찾기")
 st.markdown("### 당신의 발에 딱 맞는 '인생 신발'을 찾아드립니다.")
 
 # 1. 사진 업로드 섹션
 st.subheader("📸 사용 중인 신발 사진 업로드하기")
-uploaded_file = st.file_uploader("신발 사진 분석", 
+uploaded_file = st.file_uploader("신발 사진 분석용", 
                                  type=['png', 'jpg', 'jpeg'], 
                                  label_visibility="collapsed")
 
@@ -92,7 +109,6 @@ if st.button("🚀 AI 추천 상품", use_container_width=True):
     
     r_col1, r_col2 = st.columns(2)
     with r_col1:
-        # 에러가 났던 99번 라인: 따옴표를 정확히 닫았습니다.
         st.info("### 🔬 진단 결과\n**[안정성 우선]** 추천\n사진 분석 결과, 발목 지지력이 우수한 모델이 필요합니다.")
     with r_col2:
         st.success(f"### 💬 리뷰 분석 요약\n{length}mm 구매자의 **89%**가 착화감에 만족했습니다.")
@@ -100,5 +116,6 @@ if st.button("🚀 AI 추천 상품", use_container_width=True):
     st.markdown("#### 🎯 지금 바로 확인해야 할 최적의 상품")
     st.link_button("👉 추천 상품 보러가기", final_url, type="primary", use_container_width=True)
 
+# 수익금 정산 보호 필수 문구
 st.divider()
 st.caption("이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다. (ID: AF7661905)")
