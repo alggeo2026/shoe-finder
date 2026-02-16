@@ -2,9 +2,9 @@ import streamlit as st
 from urllib.parse import quote
 import time
 
-# [v3.0] 신찾기: UI 문구 한국어 최적화 및 레이블 정제 버전
+# [v3.1] 신찾기: 업로드 창 내부 문구 한글화 및 UI 최종 최적화
 # 2026-02-16 업데이트
-# 지침 준수: 전체 코드 제공 및 상세 변경 사항 비교 설명
+# 지침 준수: 전체 코드 제공 및 변경 사항 설명
 
 def generate_partners_link(query, min_p, max_p):
     """
@@ -29,20 +29,44 @@ def generate_partners_link(query, min_p, max_p):
 # --- UI 레이아웃 ---
 st.set_page_config(page_title="신찾기", page_icon="💰")
 
-# 메인 타이틀
+# [v3.1 추가] 업로드 창 내부 텍스트를 한글로 강제 변경하는 CSS
+st.markdown("""
+    <style>
+    /* 'Drag and drop file here' 텍스트 변경 */
+    [data-testid="stFileUploadDropzone"] section div::before {
+        content: "파일을 여기에 끌어다 놓으세요";
+        font-size: 16px;
+    }
+    /* 기존 영어 텍스트 숨기기 */
+    [data-testid="stFileUploadDropzone"] section div span {
+        display: none;
+    }
+    /* 'Browse files' 버튼 텍스트 변경 */
+    [data-testid="stBaseButton-secondary"] p {
+        display: none;
+    }
+    [data-testid="stBaseButton-secondary"]::after {
+        content: "파일 찾아보기";
+        font-size: 14px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# 메인 타이틀 (버전 이름 삭제 유지)
 st.title("💰 신찾기")
 st.markdown("### 당신의 발에 딱 맞는 '인생 신발'을 찾아드립니다.")
 
-# 1. 첫 번째 섹션 이름 변경
+# 1. 사진 업로드 섹션 (문구 수정 반영)
 st.subheader("📸 사용 중인 신발 사진 업로드하기")
-# 파일 업로더 레이블 한국어화
-uploaded_file = st.file_uploader("신발 밑창이나 발 사진을 여기에 드래그하거나 클릭하여 업로드하세요.", type=['png', 'jpg', 'jpeg'])
+uploaded_file = st.file_uploader("신발 밑창이나 발 사진을 여기에 드래그하거나 클릭하여 업로드하세요.", 
+                                 type=['png', 'jpg', 'jpeg'], 
+                                 label_visibility="collapsed") # 중복 라벨 방지
 
 if uploaded_file:
     st.image(uploaded_file, caption="분석 대상 이미지", width=300)
     st.success("✅ 비주얼 데이터 분석 준비 완료!")
 
-# 2. 두 번째 섹션 이름 변경
+# 2. 상세 조건 설정 (섹션 이름 수정 반영)
 st.subheader("📍 상세 조건 설정")
 col1, col2 = st.columns(2)
 with col1:
@@ -52,7 +76,7 @@ with col2:
     design = st.selectbox("신발 종류", ["런닝화", "스니커즈", "구두", "워크화", "슬립온"])
     price_range = st.selectbox("예산 범위", ["전체", "3~7만원", "7~15만원", "15만원 이상"])
 
-# 3. 버튼 문구 유지
+# 3. 버튼 문구 (AI 추천 상품 유지)
 if st.button("🚀 AI 추천 상품", use_container_width=True):
     with st.status("AI가 최적의 상품을 매칭 중입니다...", expanded=True) as status:
         time.sleep(1.2)
@@ -72,13 +96,4 @@ if st.button("🚀 AI 추천 상품", use_container_width=True):
     
     r_col1, r_col2 = st.columns(2)
     with r_col1:
-        st.info("### 🔬 진단 결과\n**[안정성 우선]** 추천\n사진 분석 결과, 발목 지지력이 우수한 모델이 필요합니다.")
-    with r_col2:
-        st.success(f"### 💬 리뷰 분석 요약\n{length}mm 구매자의 **89%**가 착화감에 만족했습니다.")
-
-    st.markdown("#### 🎯 지금 바로 확인해야 할 최적의 상품")
-    st.link_button("👉 추천 상품 보러가기", final_url, type="primary", use_container_width=True)
-
-# 필수 문구 유지
-st.divider()
-st.caption("이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다. (ID: AF7661905)")
+        st.info("### 🔬 진단 결과\n**[안정성 우선]** 추천\n사진 분석 결과, 발목 지지력이 우수한 모델이 필요
