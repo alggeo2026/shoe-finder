@@ -2,7 +2,7 @@ import streamlit as st
 from urllib.parse import quote
 import time
 
-# [v3.2] 신찾기: CSS 최적화를 통한 업로드 창 완전 한글화 버전
+# [v3.3] 신찾기: CSS 강제 주입을 통한 업로드 창 완전 한글화 및 오류 수정
 # 2026-02-16 업데이트
 # 지침 준수: 전체 코드 제공 및 UI 개선 사항 상세 설명
 
@@ -29,38 +29,41 @@ def generate_partners_link(query, min_p, max_p):
 # --- UI 레이아웃 ---
 st.set_page_config(page_title="신찾기", page_icon="💰")
 
-# [v3.2 수정] 영문을 완벽히 숨기고 한글만 보이게 하는 정밀 CSS
+# [v3.3 핵심] 영문을 투명하게 숨기고 한글만 보이게 하는 강력한 CSS
 st.markdown("""
     <style>
-    /* 1. 업로드 영역 전체 문구 숨기기 및 교체 */
-    [data-testid="stFileUploadDropzone"] section div small {
-        display: none;
-    }
-    [data-testid="stFileUploadDropzone"] section div span {
-        display: none;
-    }
-    [data-testid="stFileUploadDropzone"] section div::before {
-        content: "사진 파일을 이 곳에 끌어다 놓으세요";
-        font-size: 16px;
-        font-weight: bold;
-        color: #31333F;
+    /* 1. 업로드 박스 안의 모든 영문 텍스트 숨기기 */
+    [data-testid="stFileUploadDropzone"] section div * {
+        color: transparent !important;
+        display: none !important;
     }
     
-    /* 2. 'Browse files' 버튼 텍스트 숨기기 및 교체 */
-    [data-testid="stBaseButton-secondary"] {
-        color: transparent !important;
-        position: relative;
+    /* 2. 한글 문구 강제 삽입 */
+    [data-testid="stFileUploadDropzone"] section div::before {
+        content: "사진 파일을 이 곳에 끌어다 놓으세요";
+        display: block;
+        font-size: 16px;
+        font-weight: bold;
+        color: #31333F !important;
+        visibility: visible;
+        margin-bottom: 10px;
+    }
+    
+    /* 3. 버튼 텍스트 숨기기 및 교체 */
+    [data-testid="stBaseButton-secondary"] p {
+        display: none !important;
     }
     [data-testid="stBaseButton-secondary"]::after {
         content: "파일 찾아보기";
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        color: #31333F;
+        display: block;
         font-size: 14px;
+        color: #31333F !important;
         visibility: visible;
-        white-space: nowrap;
+    }
+    
+    /* 드롭존 영역 스타일 조정 */
+    [data-testid="stFileUploadDropzone"] {
+        padding: 20px !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -116,6 +119,6 @@ if st.button("🚀 AI 추천 상품", use_container_width=True):
     st.markdown("#### 🎯 지금 바로 확인해야 할 최적의 상품")
     st.link_button("👉 추천 상품 보러가기", final_url, type="primary", use_container_width=True)
 
-# 수익금 정산 보호 필수 문구
+# 수익금 정산 보호 필수 문구 (AF7661905 적용)
 st.divider()
 st.caption("이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다. (ID: AF7661905)")
